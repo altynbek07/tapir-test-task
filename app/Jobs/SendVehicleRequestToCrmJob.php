@@ -2,21 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Contracts\CrmClient;
+use App\Contracts\CrmClientInterface;
 use App\DataTransferObjects\CrmRequestDto;
 use App\Models\VehicleRequest;
 use App\Notifications\CrmRequestFailed;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
 class SendVehicleRequestToCrmJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     public int $tries = 5;
 
@@ -26,7 +23,7 @@ class SendVehicleRequestToCrmJob implements ShouldQueue
         private readonly VehicleRequest $vehicleRequest
     ) {}
 
-    public function handle(CrmClient $client): void
+    public function handle(CrmClientInterface $client): void
     {
         $dto = new CrmRequestDto(
             phone: $this->vehicleRequest->phone,

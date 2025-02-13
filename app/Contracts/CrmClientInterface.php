@@ -4,7 +4,7 @@ namespace App\Contracts;
 
 use App\DataTransferObjects\CrmRequestDto;
 
-interface CrmClient
+interface CrmClientInterface
 {
     public function sendRequest(CrmRequestDto $dto): bool;
 }
