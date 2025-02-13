@@ -12,14 +12,15 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
-class RetryCrmRequest implements ShouldQueue
+class SendVehicleRequestToCrmJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 3;
+    public int $tries = 5;
 
-    public int $backoff = 300; // 5 минут между попытками
+    public int $backoff = 60;
 
     public function __construct(
         private readonly VehicleRequest $vehicleRequest
@@ -36,19 +37,18 @@ class RetryCrmRequest implements ShouldQueue
             $this->vehicleRequest->update([
                 'crm_status' => 'sent',
             ]);
-
-            return;
         }
+    }
 
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
         $this->vehicleRequest->update([
             'crm_status' => 'failed',
-            'retry_count' => $this->vehicleRequest->retry_count + 1,
-            'last_retry_at' => now(),
         ]);
 
-        if ($this->vehicleRequest->retry_count >= $this->tries) {
-            Notification::route('mail', config('admin.email'))
-                ->notify(new CrmRequestFailed($this->vehicleRequest));
-        }
+        Notification::route('mail', config('tapir.admin_email'))->notify(new CrmRequestFailed($this->vehicleRequest));
     }
 }

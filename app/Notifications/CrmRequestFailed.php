@@ -26,9 +26,10 @@ class CrmRequestFailed extends Notification
             ->error()
             ->subject('CRM Request Failed')
             ->line('Failed to send vehicle request to CRM after multiple attempts.')
-            ->line("Vehicle: {$this->vehicleRequest->vehicle->brand} {$this->vehicleRequest->vehicle->model}")
-            ->line("VIN: {$this->vehicleRequest->vehicle->vin}")
-            ->line("Phone: {$this->vehicleRequest->phone}")
-            ->action('View in Admin Panel', url('/admin/vehicle-requests'));
+            ->line('Phone: '.$this->vehicleRequest->phone)
+            ->line('Brand: '.$this->vehicleRequest->vehicle->brand)
+            ->line('Model: '.$this->vehicleRequest->vehicle->model)
+            ->line('VIN: '.$this->vehicleRequest->vehicle->vin)
+            ->action('View in Admin Panel', url('/admin/vehicle-request'));
     }
 }
