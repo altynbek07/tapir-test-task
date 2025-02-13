@@ -16,8 +16,6 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
             $table->string('phone');
             $table->enum('crm_status', ['pending', 'sent', 'failed'])->default('pending');
-            $table->unsignedInteger('retry_count')->default(0);
-            $table->timestamp('last_retry_at')->nullable();
             $table->timestamps();
         });
     }
